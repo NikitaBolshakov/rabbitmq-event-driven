@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672" # Dev only
+      - "15672:15672" # Dev only
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_port_connectivity"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - rabbitmq_service_network
+
+  postgres:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=eventstore
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - rabbitmq_service_network
+
+  rabbitmq_service:
+    build: 
+      context: ..
+      dockerfile: rabbitmq_service/Dockerfile
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_healthy
+    environment:
+      - RABBITMQ_URL=amqp://guest:guest@rabbitmq/
+      - DATABASE_URL=postgresql+asyncpg://postgres:postgres@postgres/eventstore
+      - TASKS_PACKAGE=tasks
+      - SERVICE_NAME=rabbitmq_service
+    networks:
+      - rabbitmq_service_network
+
+volumes:
+  postgres_data: 
+
+networks:
+  rabbitmq_service_network:
+    driver: bridge

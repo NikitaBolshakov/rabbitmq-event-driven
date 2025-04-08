@@ -1,0 +1,3 @@
+rabbitmq_url: "amqp://guest:guest@rabbitmq/"
+database_url: "postgresql+asyncpg://postgres:postgres@postgres/eventstore"
+service_name: rabbitmq_service 

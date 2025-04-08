@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: event-driven-utils
+Version: 0.1.0
+Author-email: Nikita Bolshakov <bxxlshakxxv@gmail.com>
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.5.2
+Requires-Dist: pydantic-core>=2.10.0

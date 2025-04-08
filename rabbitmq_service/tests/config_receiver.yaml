@@ -1,0 +1,2 @@
+rabbitmq_url: "amqp://guest:guest@localhost/"
+service_name: test_receiver 
